@@ -8,11 +8,46 @@
     <script src="https://docs.opencv.org/4.5.0/opencv.js" type="text/javascript"></script>
     <script src="./extractstamp.js"></script>
     <style>
+        :root {
+            --primary-blue: rgba(100, 149, 237, 0.2);
+            --accent-yellow: rgba(255, 215, 0, 0.2);
+        }
+        body {
+            background: linear-gradient(45deg, var(--primary-blue), var(--accent-yellow)),
+                        url('/logo32.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: linear-gradient(135deg, rgba(100, 149, 237, 0.1), rgba(255, 215, 0, 0.1));
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1200px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+        }
         #imageContainer, #originalImageContainer {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
             margin-top: 20px;
+        }
+        .image-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         #imageContainer img, #originalImageContainer img {
             max-width: 300px;
@@ -20,9 +55,62 @@
             object-fit: contain;
             border: 1px solid #ddd;
             transition: transform 0.3s ease;
+            border-radius: 10px;
         }
         #imageContainer img:hover, #originalImageContainer img:hover {
             transform: scale(1.1);
+        }
+        .nav-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            padding: 12px 24px;
+            border-radius: 8px;
+            background: rgba(100, 149, 237, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 20px 0;
+        }
+        .custom-file-input {
+            backdrop-filter: blur(8px);
+            padding: 12px 25px;
+            border-radius: 8px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .custom-file-input:hover {
+            background: rgba(255, 215, 0, 0.3);
+        }
+        .download-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            backdrop-filter: blur(8px);
+            background: rgba(100, 149, 237, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .download-btn:hover {
+            background-color: #45a049;
         }
         #loading {
             display: none;
@@ -39,12 +127,23 @@
     </style>
 </head>
 <body>
-    <h1>选择图片</h1>
-    <input type="file" id="imageInput" accept="image/*" onchange="selectImage()">
-    <h2>原图：</h2>
-    <div id="originalImageContainer"></div>
-    <h2>提取的印章：</h2>
-    <div id="imageContainer"></div>
+    <a href=".././" class="nav-btn">← 返回生成印章</a>
+    <div class="container">
+        <div class="file-input-wrapper">
+            <label class="custom-file-input">
+                点击选择图片立即提取
+                <input type="file" id="imageInput" accept="image/*" onchange="selectImage()" hidden>
+            </label>
+        </div>
+        <h1 style="color: #fff; text-align: center; margin: 20px 0;">印章提取工具</h1>
+    <div class="container">
+        <h2>原图：</h2>
+        <div id="originalImageContainer"></div>
+    </div>
+    <div class="container">
+        <h2>提取的印章：</h2>
+        <div id="imageContainer"></div>
+    </div>
     <div id="loading">处理中，请稍候...</div>
     <script>
         let isReady = false;
@@ -93,12 +192,30 @@
             const container = document.getElementById('imageContainer');
             container.innerHTML = ''; // 清空之前的内容
             imageList.forEach((imgSrc, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'image-item';
+                
                 const img = document.createElement('img');
                 img.src = imgSrc;
                 img.alt = `提取的印章 ${index + 1}`;
                 img.style.width = '100px';
                 img.style.height = '100px';
-                container.appendChild(img);
+                
+                const downloadBtn = document.createElement('button');
+                downloadBtn.textContent = '下载';
+                downloadBtn.className = 'download-btn';
+                downloadBtn.onclick = function() {
+                    const link = document.createElement('a');
+                    link.href = imgSrc;
+                    link.download = `stamp_${index + 1}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
+                
+                itemDiv.appendChild(img);
+                itemDiv.appendChild(downloadBtn);
+                container.appendChild(itemDiv);
             });
         }
 

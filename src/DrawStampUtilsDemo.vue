@@ -260,7 +260,7 @@ watch(stampTypePresets, () => {
 
 // 打开提取印章工具网址
 const openExtractStampTool = () => {
-  window.open('https://drawstamp.pages.dev/extractstamp/', '_blank')
+  window.open('./extractstamp/index.html', '_blank')
 }
 
 // 修改字体预览更新函数
