@@ -3,7 +3,7 @@
 Extract stamps from images using OpenCV.js.
 
 ##
-Preview Site: https://xxss0903.github.io/extractstamp/index.html
+Preview Site: https://drawstamp.pages.dev/extractstamp/index.html
 
 ## Features
 
